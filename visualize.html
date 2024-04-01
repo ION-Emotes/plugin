@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Emotes</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        #emojiSearch {
+            padding: 10px;
+            margin-bottom: 20px;
+            width: calc(100% - 22px);
+            /* Adjusts for padding */
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #emojis {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        #emojis div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #emojis img {
+            position: relative;
+            /* Needed for tooltip positioning */
+            width: 48px;
+            height: 48px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            /* Indicates that the item is interactive */
+        }
+
+        #emojis img::before {
+            content: attr(data-tooltip);
+            /* Use the data-tooltip attribute value */
+            position: absolute;
+            bottom: 100%;
+            /* Position above the image */
+            left: 50%;
+            /* Center below the image */
+            transform: translateX(-50%);
+            /* Center the tooltip */
+            background-color: #333;
+            /* Tooltip background color */
+            color: #fff;
+            /* Tooltip text color */
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            /* Prevents the tooltip from wrapping */
+            opacity: 0;
+            /* Start invisible */
+            visibility: hidden;
+            /* Hide tooltip by default */
+            transition: opacity 0.2s, visibility 0.2s;
+            /* Smooth transition for tooltip */
+            z-index: 1;
+            /* Ensure the tooltip is above other content */
+        }
+
+        #emojis img:hover::before {
+            opacity: 1;
+            /* Make the tooltip visible on hover */
+            visibility: visible;
+            /* Show tooltip */
+        }
+
+
+        #emojis p {
+            font-size: 12px;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<script>
+    function displayEmojis(emotes) {
+        // Find the container in the document
+        const container = document.getElementById('emojis');
+
+        // Clear previous content
+        container.innerHTML = '';
+
+        // Iterate through each emoji in the data
+        emotes.forEach(emoji => {
+            // Create an img element for the emoji
+            const img = document.createElement('img');
+            img.src = emoji.url;
+            img.alt = emoji.name;
+            img.style.width = '48px'; // Set the image size
+            img.style.height = '48px';
+            img.setAttribute('data-tooltip', emoji.name);
+
+            // Create a caption for the emoji name
+            const caption = document.createElement('p');
+            caption.textContent = emoji.name;
+
+            // Create a div to wrap the img and caption
+            const div = document.createElement('div');
+            div.appendChild(img);
+            div.appendChild(caption);
+
+            // Append the div to the container
+            container.appendChild(div);
+        });
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        const res = await fetch("https://raw.githubusercontent.com/ION606/streamelements/main/emotes.json");
+        const emotes = await res.json();
+        displayEmojis(emotes);
+
+        // Attach an event listener to the search input
+        document.getElementById('emojiSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredData = emotes.filter(emoji => emoji.name.toLowerCase().includes(searchTerm));
+            displayEmojis(filteredData);
+        });
+    });
+</script>
+
+<body>
+    <div style="text-align: center;">
+        <h1>Emoji Visualizer</h1>
+        <h4>Created by ION606</h4>
+    </div>
+    <input type="text" id="emojiSearch" placeholder="Search emojis...">
+    <div id="emojis"></div>
+</body>
+
+</html>
