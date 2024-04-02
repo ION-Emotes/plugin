@@ -3,7 +3,7 @@
 async function getUserEmotes(token, serverId=null) {
     const getGuildEmotes = async (id) => {
         try {
-            const r = await fetch(`https://discord.com/api/guilds/${serverId}/emojis`, { headers: { Authorization: token } });
+            const r = await fetch(`https://discord.com/api/guilds/${id}/emojis`, { headers: { Authorization: token } });
             const guildEmojis = await r.json();
             return guildEmojis.map(eRaw => ({ name: eRaw.name, id: eRaw.id, guildId: id, animated: eRaw.animated }));
         }
