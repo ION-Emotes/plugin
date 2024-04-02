@@ -1,23 +1,31 @@
 // Helper functions for getting emotes from Discord
 
-async function getUserEmotes(token) {
+async function getUserEmotes(token, serverId=null) {
+    const getGuildEmotes = async (id) => {
+        try {
+            const r = await fetch(`https://discord.com/api/guilds/${serverId}/emojis`, { headers: { Authorization: token } });
+            const guildEmojis = await r.json();
+            return guildEmojis.map(eRaw => ({ name: eRaw.name, id: eRaw.id, guildId: id, animated: eRaw.animated }));
+        }
+        catch { console.error };
+    }
+
+    if (serverId) return await getGuildEmotes(serverId);
+
     const response = await fetch("https://discord.com/api/users/@me/guilds", {
         headers: { Authorization: token }
     });
 
     const data = await response.json();
     const guildsEmojis = [];
-
+    
     for (const { id } of data) {
         try {
-            const r = await fetch(`https://discord.com/api/guilds/${id}/emojis`, { headers: { Authorization: token } });
-            const guildEmojis = await r.json();
-            guildsEmojis.push(...guildEmojis.map(eRaw => ({ name: eRaw.name, id: eRaw.id, guildId: id, animated: eRaw.animated })));
+            guildsEmojis.push(...(await getGuildEmotes(id)));
         }
         catch { console.error };
     }
 
-    // fs.writeFileSync(fpath, JSON.stringify(guildsEmojis));
     return guildsEmojis;
 }
 
