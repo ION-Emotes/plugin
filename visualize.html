@@ -100,18 +100,90 @@
             overflow: hidden;
         }
 
-        .file-name {
+        .file-button {
             margin: 5px;
-            padding: 5px;
-            background-color: #f0f0f0;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
             border-radius: 5px;
-            display: inline-block;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .file-button:hover {
+            background-color: #45a049;
+        }
+
+        .input-button-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Creates space between the input and the button */
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 2px solid #007BFF;
+            /* Matching border color with the button */
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            /* A pleasant blue */
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px #0056b3;
+            /* Darker shade of the button color for 3D effect */
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            /* A slightly darker shade for hover effect */
+            box-shadow: 0 2px #003d7a;
+            /* Adjust shadow for deeper 3D effect */
+            transform: translateY(-2px);
+            /* Slight move up */
+        }
+
+        button:active {
+            transform: translateY(1px);
+            /* Mimic button press */
+            box-shadow: 0 2px #003d7a;
+            /* Less shadow */
         }
     </style>
 </head>
 
 <script>
-    function displayEmojis(emotes) {
+    const getCDNLink = (id, animated) => `https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "webp"}?size=48&quality=lossless`;
+    const clearInps = () => {
+        document.getElementById('emojis').style.marginBottom = "0px";
+        document.getElementById("emojis").innerHTML = "";
+        document.getElementById('emojiSearch').value = ''
+    }
+
+    const toggleLoad = () => {
+        const img = document.querySelector("#loadingif");
+
+        if (img) img.remove();
+        else document.getElementById("emojis").innerHTML = '<img id="loadingif" src="https://github.com/ION606/streamelements/blob/main/loading.gif?raw=true" style="width: 300px; height: 300px;">';
+    }
+
+    async function displayEmojis(emojiKey) {
+        const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${emojiKey}`);
+        const emotes = await res.json();
+
+        toggleLoad();
+
         // Find the container in the document
         const container = document.getElementById('emojis');
 
@@ -119,14 +191,53 @@
         container.innerHTML = '';
 
         // Iterate through each emoji in the data
+        Object.entries(emotes).forEach(([eName, emoji]) => {
+            // Create an img element for the emoji
+            const img = document.createElement('img');
+            // Construct the URL using the emoji id
+            img.src = getCDNLink(emoji.id, emoji.animated);
+            img.alt = eName;
+            img.style.width = '48px'; // Set the image size
+            img.style.height = '48px';
+            img.setAttribute('data-tooltip', emoji.oldName);
+
+            // Create a caption for the emoji name
+            const caption = document.createElement('p');
+            caption.textContent = emoji.oldName;
+
+            // Create a div to wrap the img and caption
+            const div = document.createElement('div');
+            div.appendChild(img);
+            div.appendChild(caption);
+
+            // Append the div to the container
+            container.appendChild(div);
+        });
+    }
+
+
+    function displayEmojisArr(emotes) {
+        // Find the container in the document
+        const container = document.getElementById('emojis');
+
+        // Clear previous content
+        container.innerHTML = '';
+
+        container.style.marginBottom = "0px";
+        if (!emotes.length) return container.innerHTML = "<h1>No Results Found!</h1>";
+
+        // Iterate through each emoji in the data
         emotes.forEach(emoji => {
             // Create an img element for the emoji
             const img = document.createElement('img');
-            img.src = emoji.url;
+            img.src = getCDNLink(emoji.id, emoji.animated);
             img.alt = emoji.name;
             img.style.width = '48px'; // Set the image size
             img.style.height = '48px';
-            img.setAttribute('data-tooltip', emoji.name);
+            img.setAttribute('data-tooltip', emoji.oldName);
+            img.onclick = (e) => {
+                alert(`Original Name: ${emoji.oldName}\nLookup ID: ${emoji.name}`);
+            }
 
             // Create a caption for the emoji name
             const caption = document.createElement('p');
@@ -140,22 +251,34 @@
             // Append the div to the container
             container.appendChild(div);
         });
+
+        container.style.marginBottom = "40px";
     }
 
+
     async function displayKeys() {
-        const apiUrl = 'https://api.github.com/repos/ON606/streamelements/contents/data';
+        toggleLoad();
+
+        const el = document.getElementById("emojis");
+        const apiUrl = 'https://api.github.com/repos/ION606/streamelements/contents/data';
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
-            console.log(data);
+            el.innerHTML = "";
+
             const fileListElement = document.getElementById('fileList');
 
             data.forEach(item => {
-                if (item.type === 'file' && item.name.length === 1) {
-                    const fileNameElement = document.createElement('div');
-                    fileNameElement.classList.add('file-name');
-                    fileNameElement.textContent = item.name;
-                    fileListElement.appendChild(fileNameElement);
+                if (item.type === 'file') {
+                    const fileButton = document.createElement('button');
+                    fileButton.classList.add('file-button');
+                    fileButton.textContent = item.name.replace(".json", "");
+
+                    fileButton.addEventListener('click', function () {
+                        toggleLoad();
+                        displayEmojis(item.name);
+                    });
+                    fileListElement.appendChild(fileButton);
                 }
             });
         } catch (error) {
@@ -164,17 +287,45 @@
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
-        const res = await fetch("https://raw.githubusercontent.com/ION606/streamelements/main/emotes.json");
-        const emotes = await res.json();
-        // displayEmojis(emotes);
+        toggleLoad();
         displayKeys();
 
         // Attach an event listener to the search input
+        let debounceTimer;
+
         document.getElementById('emojiSearch').addEventListener('input', (e) => {
+            const el = document.getElementById("emojis");
+            
+            // Clear the existing timer on each input event
+            clearTimeout(debounceTimer);
             const searchTerm = e.target.value.toLowerCase();
-            const filteredData = emotes.filter(emoji => emoji.name.toLowerCase().includes(searchTerm));
-            displayEmojis(filteredData);
+            if (!searchTerm || !searchTerm[0]) return el.innerHTML = "";
+
+            el.innerHTML = '<img src="https://github.com/ION606/streamelements/blob/main/loading.gif?raw=true" style="width: 300px; height: 300px;">';
+
+            // Set a new timer
+            debounceTimer = setTimeout(async () => {
+                const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${searchTerm[0]}.json`);
+                const emotes = await res.json();
+
+                const filteredData = Object.keys(emotes).filter(key => key.includes(searchTerm.toLowerCase())).reduce((obj, key) => {
+                    const o2 = emotes[key];
+                    o2.name = key;
+                    obj.push(o2);
+                    return obj;
+                }, []);
+
+                displayEmojisArr(filteredData);
+            }, 1500);
         });
+
+        const params = new URLSearchParams(window.location.search);
+        const query = params.get("query");
+        if (query) {
+            const inpEl = document.getElementById('emojiSearch');
+            inpEl.value = query;
+            inpEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
     });
 </script>
 
@@ -183,9 +334,14 @@
         <h1>Emoji Visualizer</h1>
         <h4>Created by ION606</h4>
     </div>
-    <input type="text" id="emojiSearch" placeholder="Search emojis...">
+
+    <div class="input-button-container">
+        <input type="text" id="emojiSearch" placeholder="Search emojis...">
+        <button onclick="clearInps()" style="margin-top: -25px;">Clear</button>
+    </div>
     <div id="emojis"></div>
     <div id="fileList"></div>
+    <h4 style="text-align: center; margin-top: 50px;">Click on an emoji to see it's lookup ID</h4>
 </body>
 
 </html>
