@@ -22,6 +22,36 @@
             margin: 0 auto;
         }
 
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            /* A pleasant blue */
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px #0056b3;
+            /* Darker shade of the button color for 3D effect */
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            /* A slightly darker shade for hover effect */
+            box-shadow: 0 2px #003d7a;
+            /* Adjust shadow for deeper 3D effect */
+            transform: translateY(-2px);
+            /* Slight move up */
+        }
+
+        button:active {
+            transform: translateY(1px);
+            /* Mimic button press */
+            box-shadow: 0 2px #003d7a;
+            /* Less shadow */
+        }
+
         h2 {
             color: #333;
         }
@@ -60,7 +90,17 @@
 
 <body>
     <div class="instructions">
-        <h2>Custom Emotes Integration Guide</h2>
+        <script>
+            function closeOrRedir() {
+                if (window.opener) window.close();
+                else window.location.pathname = "/"
+            }
+        </script>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2>Custom Emotes Integration Guide</h2>
+            <button onclick="closeOrRedir()">tutorial</button>
+        </div>
+        
         <ol>
             <li>Add the following line to your HTML page within the <code>&lt;head&gt;</code> section:
                 <pre><code>&lt;meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"&gt;
