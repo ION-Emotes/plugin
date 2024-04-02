@@ -92,7 +92,7 @@ window.addEventListener('onEventReceived', function (obj) {
     let message = attachEmotes(data);
     let badges = "", badge;
     if (provider === 'mixer') {
-        data.badges.push({url: data.avatar});
+        data.badges.push({ url: data.avatar });
     }
     for (let i = 0; i < data.badges.length; i++) {
         badge = data.badges[i];
@@ -125,7 +125,7 @@ window.addEventListener('onWidgetLoad', function (obj) {
     hideCommands = fieldData.hideCommands;
     channelName = obj.detail.channel.username;
     mergeMessages = fieldData.mergeMessages === "yes";
-  	customEmotes = [];
+    customEmotes = [];
     fetch('https://api.streamelements.com/kappa/v2/channels/' + obj.detail.channel.id + '/').then(response => response.json()).then((profile) => {
         provider = profile.provider;
     });
@@ -136,7 +136,7 @@ window.addEventListener('onWidgetLoad', function (obj) {
         addition = "append";
         removeSelector = ".message-row:nth-last-child(n+" + (messagesLimit + 1) + ")"
     }
-  
+
     // fetch("https://raw.githubusercontent.com/ION606/streamelements/main/emotes.json").then(res => res.json()).then(emojiData => {customEmotes = emojiData;});
 
     ignoredUsers = fieldData.ignoredUsers.toLowerCase().replace(" ", "").split(",");
@@ -145,11 +145,11 @@ window.addEventListener('onWidgetLoad', function (obj) {
 
 // TO BE RUN IN THE BROWSER UNDER DISCORD
 function scrapeFavEmotes() {
-  Array.from(document.querySelector("#emoji-picker-grid").querySelector(".categorySection__6f1c3").querySelectorAll("[data-type='emoji']")).map(el => {
-    const img = el.querySelector("img");
-      if (!img) return null;
-      return {name: img.alt, url: img.src}
-  }).filter(o => o);
+    Array.from(document.querySelector("#emoji-picker-grid").querySelector(".categorySection__6f1c3").querySelectorAll("[data-type='emoji']")).map(el => {
+        const img = el.querySelector("img");
+        if (!img) return null;
+        return { name: img.alt, url: img.src }
+    }).filter(o => o);
 }
 
 
@@ -176,7 +176,7 @@ function attachEmotes(message) {
                         return `<img class="emote" " src="${url}"/>`;
                     } else {
                         if (typeof result[0].coords === "undefined") {
-                            result[0].coords = {x: 0, y: 0};
+                            result[0].coords = { x: 0, y: 0 };
                         }
                         let x = parseInt(result[0].coords.x);
                         let y = parseInt(result[0].coords.y);
@@ -208,20 +208,18 @@ function html_encode(e) {
 }
 
 
-async function fetchFromEmojiAPI(emojiInp) {
-  const res = await fetch(`https://emoji.gg/emojis/${emojiInp}&sort=downloads`);
-  
-}
-
-
 async function getCustomEmote(query) {
     try {
-        if (!query) return;
+        if (!query) return null;
         const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${query[0]}.json`)
         const data = await res.json();
-        return Object.keys(data).filter(key => key === searchTerm.toLowerCase());
+        const o = Object.entries(data).find(([eName, emoji]) => eName == query.toLowerCase());
+
+        if (!o) return null;
+
+        return `https://cdn.discordapp.com/emojis/${o[1].id}.${o[1].animated ? "gif" : "webp"}?size=48&quality=lossless`
     }
-    catch(err) {
+    catch (err) {
         console.error(err);
         return null;
     }
@@ -229,9 +227,22 @@ async function getCustomEmote(query) {
 
 
 async function customMsg(msgInp) {
-  const cEmote = await getCustomEmote(msgInp?.replaceAll(":", ""));
-  if (cEmote) return `<img class="badge" src="${cEmote.url}" alt="${cEmote.name}">`;
-  else return msgInp;
+    try {
+        const msgParts = [];
+        // deal with emotes
+        for (const msgPart of msgInp.split(" ")) {
+            if (msgPart.startsWith(":") && msgPart.endsWith(":")) {
+                const cEmote = await getCustomEmote(msgPart.replaceAll(":", ""));
+
+                if (cEmote) msgParts.push(`<img class="badge" src="${cEmote}" alt="${msgPart.replaceAll(":", "")}">`);
+                else msgParts.push(msgPart);
+            }
+            else msgParts.push(msgPart);
+        }
+
+        return msgParts.join(" ");
+    }
+    catch (err) { return err.message; }
 }
 
 
@@ -251,9 +262,9 @@ async function addMessage(username, badges, message, isAction, uid, msgId) {
         return;
     }
 
-  	
-  	const msgInner = await customMsg(message);
-  
+
+    const msgInner = await customMsg(message);
+
     const element = $.parseHTML(`
     <div data-sender="${uid}" data-msgid="${msgId}" class="message-row {animationIn} animated" id="msg-${totalMessages}">
         <div class="user-box ${actionClass}">${badges}${username}</div>
