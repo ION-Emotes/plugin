@@ -13,7 +13,7 @@ async function getUserEmotes(token, serverId=null) {
     if (serverId) return await getGuildEmotes(serverId);
 
     const response = await fetch("https://discord.com/api/users/@me/guilds", {
-        headers: { Authorization: token }
+        headers: { Authorization: token, "Access-Control-Allow-Origin": "*" }
     });
 
     const data = await response.json();
