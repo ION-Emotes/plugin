@@ -1,8 +1,5 @@
 // Helper functions for getting emotes from Discord
 
-const fs = require('fs');
-const fpath = "temp/temp.json";
-
 async function getUserEmotes(token) {
     const response = await fetch("https://discord.com/api/users/@me/guilds", {
         headers: { Authorization: token }
@@ -20,14 +17,13 @@ async function getUserEmotes(token) {
         catch { console.error };
     }
 
-    fs.writeFileSync(fpath, JSON.stringify(guildsEmojis));
+    // fs.writeFileSync(fpath, JSON.stringify(guildsEmojis));
+    return guildsEmojis;
 }
 
 
-function checkForCollisions() {
-    const data = JSON.parse(fs.readFileSync(fpath));
+function handleCollisions(data) {
     const o = {};
-    const collisions = [];
 
     for (const obj of data) {
         let { name } = obj;
@@ -45,22 +41,14 @@ function checkForCollisions() {
         o[name] = obj;
     }
 
-    if (collisions.length) {
-        fs.writeFile("collisions.json", JSON.stringify(collisions.sort((a, b) => a.name.localeCompare(b.name))), (err) => {
-            if (err) console.error(err);
-            else console.log("DONE WITH COLLISION WRITING");
-        });
-    }
-
-    fs.writeFile("temp/noncollisions.json", JSON.stringify(o), (err) => {
-        if (err) console.error(err);
-        else console.log("DONE WITH NON-COLLISION WRITING");
-    });
+    return o;
 }
 
 
-function groupByFirstLetterArr() {
-    const items = JSON.parse(fs.readFileSync("temp/noncollisions.json"));
+/**
+ * @deprecated
+ */
+function groupByFirstLetterArr(items) {
     if (!items) return console.error("ITEMS NOT FOUND!");
 
     const itemsByFirstChar = items.reduce((acc, item) => {
@@ -73,13 +61,11 @@ function groupByFirstLetterArr() {
         return acc;
     }, {});
 
-    for (const fChar in itemsByFirstChar) {
-        fs.writeFileSync(`data/${fChar}.json`, JSON.stringify(itemsByFirstChar[fChar]));
-    }
+    return itemsByFirstChar;
 }
 
-function groupByFirstLetterOfKey() {
-    const items = JSON.parse(fs.readFileSync("temp/noncollisions.json"));
+
+function groupByFirstLetterOfKey(items) {
     if (!items) return console.error("ITEMS NOT FOUND!");
 
     const grouped = {};
@@ -96,9 +82,5 @@ function groupByFirstLetterOfKey() {
         grouped[firstLetter][key] = items[key];
     });
 
-    for (const fChar in grouped) {
-        fs.writeFileSync(`data/${fChar}.json`, JSON.stringify(grouped[fChar]));
-    }
+    return grouped;
 }
-
-groupByFirstLetterOfKey();
