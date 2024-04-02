@@ -163,7 +163,7 @@
     </style>
 </head>
 
-<script>2
+<script>
     const getCDNLink = (id, animated) => `https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "webp"}?size=48&quality=lossless`;
     const clearInps = () => {
         document.getElementById('emojis').style.marginBottom = "0px";
@@ -341,7 +341,11 @@
     </div>
     <div id="emojis"></div>
     <div id="fileList"></div>
-    <h4 style="text-align: center; margin-top: 50px;">Click on an emoji to see it's lookup ID</h4>
+    
+    <div style="text-align: center; margin-top: 50px;">
+        <h4>Click on an emoji to see it's lookup ID</h4>
+        <button onclick="window.open('howto.html', '_blank')">tutorial</button>
+    </div>
 </body>
 
 </html>
