@@ -30,7 +30,7 @@ async function getUserEmotes(token, serverId=null) {
 }
 
 
-function handleCollisions(data) {
+async function handleCollisions(data) {
     const o = {};
 
     for (const obj of data) {
@@ -38,7 +38,12 @@ function handleCollisions(data) {
         let i = 0;
         name = name.toLowerCase();
 
-        if (name in o) {
+        // get the corresponding file in the db
+        const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${name[0]}.json`);
+        const data = await res.json();
+        const keys = Object.keys(data);
+
+        if (name in o || keys.find((eName) => (eName == name))) {
             while (`${name}_${i}` in o) { i++; }
             name += `_${i}`;
         }
