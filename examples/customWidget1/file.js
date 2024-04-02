@@ -137,7 +137,7 @@ window.addEventListener('onWidgetLoad', function (obj) {
         removeSelector = ".message-row:nth-last-child(n+" + (messagesLimit + 1) + ")"
     }
   
-    fetch("https://raw.githubusercontent.com/ION606/streamelements/main/emotes.json").then(res => res.json()).then(emojiData => {customEmotes = emojiData;});
+    // fetch("https://raw.githubusercontent.com/ION606/streamelements/main/emotes.json").then(res => res.json()).then(emojiData => {customEmotes = emojiData;});
 
     ignoredUsers = fieldData.ignoredUsers.toLowerCase().replace(" ", "").split(",");
 });
@@ -214,8 +214,22 @@ async function fetchFromEmojiAPI(emojiInp) {
 }
 
 
+async function getCustomEmote(query) {
+    try {
+        if (!query) return;
+        const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${query[0]}.json`)
+        const data = await res.json();
+        return Object.keys(data).filter(key => key === searchTerm.toLowerCase());
+    }
+    catch(err) {
+        console.error(err);
+        return null;
+    }
+}
+
+
 async function customMsg(msgInp) {
-  const cEmote = customEmotes.find(em => em.name == msgInp.toLowerCase());
+  const cEmote = await getCustomEmote(msgInp?.replaceAll(":", ""));
   if (cEmote) return `<img class="badge" src="${cEmote.url}" alt="${cEmote.name}">`;
   else return msgInp;
 }
