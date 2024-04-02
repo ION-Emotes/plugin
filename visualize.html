@@ -99,6 +99,14 @@
             word-wrap: break-word;
             overflow: hidden;
         }
+
+        .file-name {
+            margin: 5px;
+            padding: 5px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -134,10 +142,32 @@
         });
     }
 
+    async function displayKeys() {
+        const apiUrl = 'https://api.github.com/repos/ON606/streamelements/contents/data';
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            console.log(data);
+            const fileListElement = document.getElementById('fileList');
+
+            data.forEach(item => {
+                if (item.type === 'file' && item.name.length === 1) {
+                    const fileNameElement = document.createElement('div');
+                    fileNameElement.classList.add('file-name');
+                    fileNameElement.textContent = item.name;
+                    fileListElement.appendChild(fileNameElement);
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching directory contents:', error);
+        }
+    }
+
     window.addEventListener("DOMContentLoaded", async () => {
         const res = await fetch("https://raw.githubusercontent.com/ION606/streamelements/main/emotes.json");
         const emotes = await res.json();
-        displayEmojis(emotes);
+        // displayEmojis(emotes);
+        displayKeys();
 
         // Attach an event listener to the search input
         document.getElementById('emojiSearch').addEventListener('input', (e) => {
@@ -155,6 +185,7 @@
     </div>
     <input type="text" id="emojiSearch" placeholder="Search emojis...">
     <div id="emojis"></div>
+    <div id="fileList"></div>
 </body>
 
 </html>
