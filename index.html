@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="Custom Emotes for StreamElements">
     <meta property="og:description" content="Discover and integrate custom emotes into your StreamElements overlays and alerts, bringing personality and engagement to your streams.">
-    <meta property="og:image" content="https://github.com/ION606/streamelements/blob/main/loading.gif?raw=true">
+    <meta property="og:image" content="https://github.com/ION-Emotes/data/blob/main/loading.gif?raw=true">
     <meta property="og:url" content="https://streamelements.ion606.com/">
     <meta property="og:type" content="website">
     
@@ -181,11 +181,11 @@
         const img = document.querySelector("#loadingif");
 
         if (img) img.remove();
-        else document.getElementById("emojis").innerHTML = '<img id="loadingif" src="https://github.com/ION606/streamelements/blob/main/loading.gif?raw=true" style="width: 300px; height: 300px;">';
+        else document.getElementById("emojis").innerHTML = '<img id="loadingif" src="https://github.com/ION-Emotes/data/blob/main/loading.gif?raw=true" style="width: 300px; height: 300px;">';
     }
 
     async function displayEmojis(emojiKey) {
-        const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${emojiKey}`);
+        const res = await fetch(`https://raw.githubusercontent.com/ION-Emotes/data/main/data/${emojiKey}`);
         const emotes = await res.json();
 
         toggleLoad();
@@ -266,7 +266,7 @@
         toggleLoad();
 
         const el = document.getElementById("emojis");
-        const apiUrl = 'https://api.github.com/repos/ION606/streamelements/contents/data';
+        const apiUrl = 'https://api.github.com/repos/ION-Emotes/data/contents/data';
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
@@ -316,11 +316,11 @@
             const searchTerm = e.target.value.toLowerCase();
             if (!searchTerm || !searchTerm[0]) return el.innerHTML = "";
 
-            el.innerHTML = '<img src="https://github.com/ION606/streamelements/blob/main/loading.gif?raw=true" style="width: 300px; height: 300px;">';
+            el.innerHTML = '<img src="https://github.com/ION-Emotes/data/blob/main/loading.gif?raw=true" style="width: 300px; height: 300px;">';
 
             // Set a new timer
             debounceTimer = setTimeout(async () => {
-                const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${searchTerm[0]}.json`);
+                const res = await fetch(`https://raw.githubusercontent.com/ION-Emotes/data/main/data/${searchTerm[0]}.json`);
                 const emotes = await res.json();
 
                 const filteredData = Object.keys(emotes).filter(key => key.includes(searchTerm.toLowerCase())).reduce((obj, key) => {

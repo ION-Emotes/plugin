@@ -1,7 +1,7 @@
 async function getCustomEmote(query) {
     try {
         if (!query) return null;
-        const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${query[0]}.json`)
+        const res = await fetch(`https://raw.githubusercontent.com/ION-Emotes/data/main/data/${query[0]}.json`)
         const data = await res.json();
         const o = Object.entries(data).find(([eName, emoji]) => eName == query.toLowerCase());
 

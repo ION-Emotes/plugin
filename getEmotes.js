@@ -39,7 +39,7 @@ async function handleCollisions(data) {
         name = name.toLowerCase();
 
         // get the corresponding file in the db
-        const res = await fetch(`https://raw.githubusercontent.com/ION606/streamelements/main/data/${name[0]}.json`);
+        const res = await fetch(`https://raw.githubusercontent.com/ION-Emotes/data/main/data/${name[0]}.json`);
         const data = await res.json();
         const keys = Object.keys(data);
 
