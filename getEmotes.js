@@ -13,7 +13,7 @@ async function getUserEmotes(token, serverId=null) {
     if (serverId) return await getGuildEmotes(serverId);
 
     const response = await fetch("https://discord.com/api/users/@me/guilds", {
-        headers: { Authorization: token, "Access-Control-Allow-Origin": "*" }
+        headers: { Authorization: token }
     });
 
     const data = await response.json();
@@ -97,3 +97,15 @@ function groupByFirstLetterOfKey(items) {
 
     return grouped;
 }
+
+
+/*
+(async () => {
+    const a = await getUserEmotes(process.env.TOKEN),
+    b = await handleCollisions(a),
+    c = groupByFirstLetterOfKey(b);
+    for (const k in c) {
+        require('fs').writeFile(`data/${k}.json`, JSON.stringify(c[k]), console.error);
+    }
+});
+*/

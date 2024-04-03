@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta property="og:title" content="Custom Emotes for StreamElements">
-    <meta property="og:description" content="Discover and integrate custom emotes into your StreamElements overlays and alerts, bringing personality and engagement to your streams.">
+    <meta property="og:description"
+        content="Discover and integrate custom emotes into your StreamElements overlays and alerts, bringing personality and engagement to your streams.">
     <meta property="og:image" content="https://github.com/ION606/streamelements/blob/main/loading.gif?raw=true">
     <meta property="og:url" content="https://streamelements.ion606.com/">
     <meta property="og:type" content="website">
 
     <title>Custom Emotes Integration Instructions</title>
-    
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -59,6 +60,10 @@
             /* Less shadow */
         }
 
+        h1 {
+            text-align: center;
+        }
+
         h2 {
             color: #333;
         }
@@ -93,21 +98,32 @@
             word-wrap: break-word;
         }
     </style>
+
+    <script>
+        function closeOrRedir() {
+            if (window.opener) window.close();
+            else window.location.pathname = "/"
+        }
+
+        function inviteBot() {
+            if (["http://127.0.0.1:5500", "http://localhost:5500"].includes(window.location.origin)) {
+                window.location.href = "https://discord.com/oauth2/authorize?client_id=1224772542359933058&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5500%2Faddemote.html&scope=identify+bot&permissions=0";
+            }
+            else {
+                window.location.href = "https://discord.com/oauth2/authorize?client_id=1224772542359933058&response_type=code&redirect_uri=https%3A%2F%2Fstreamelements.ion606.com%2Faddemote.html&scope=identify+bot&permissions=0";
+            }
+        }
+    </script>
 </head>
 
 <body>
     <div class="instructions">
-        <script>
-            function closeOrRedir() {
-                if (window.opener) window.close();
-                else window.location.pathname = "/"
-            }
-        </script>
         <div style="text-align: center; margin-top: 50px;">
             <h2>Custom Emotes Integration Guide</h2>
-            <button onclick="closeOrRedir()">tutorial</button>
+            <button onclick="closeOrRedir()">home</button>
         </div>
-        
+
+        <h1>Adding to Streamelements Overlay</h1>
         <ol>
             <li>Add the following line to your HTML page within the <code>&lt;head&gt;</code> section:
                 <pre><code>&lt;meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"&gt;
@@ -119,10 +135,16 @@
             <li>Ensure the enclosing function is asynchronous. If it's not, modify it by adding <code>async</code>
                 before the function definition. For example:
                 <pre><code>function addMessage(username, badges, message, isAction, uid, msgId) {</code></pre>
-                    will become
-                <pre><code>async function addMessage(username, badges, message, isAction, uid, msgId) {</code></pre>
+                will become
+                <pre><code><b>async</b> function addMessage(username, badges, message, isAction, uid, msgId) {</code></pre>
             </li>
         </ol>
+
+        <h1>Adding Emotes</h1>
+        <p style="text-align: center;">
+            Invite the bot to your server then use <code>/add</code> to add the emote<br><br>
+            <button onclick="inviteBot()">Invite bot</button>
+        </p>
     </div>
 </body>
 
