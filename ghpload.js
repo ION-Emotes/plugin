@@ -1,6 +1,6 @@
 // for the bot
-const {ghtoken} = require('./temp/config.json');
-console.log(ghtoken)
+const {ghtoken} = require('./config.json');
+if (!ghtoken) throw "NO GITHUB TOKEN FOUND!";
 
 const axios = require('axios');
 const base64 = require('base-64');
