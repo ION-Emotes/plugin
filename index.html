@@ -5,345 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="Custom Emotes for StreamElements">
-    <meta property="og:description" content="Discover and integrate custom emotes into your StreamElements overlays and alerts, bringing personality and engagement to your streams.">
+    <meta property="og:description"
+        content="Discover and integrate custom emotes into your StreamElements overlays and alerts, bringing personality and engagement to your streams.">
     <meta property="og:image" content="https://github.com/ION-Emotes/data/blob/main/loading.gif?raw=true">
     <meta property="og:url" content="https://streamelements.ion606.com/">
     <meta property="og:type" content="website">
-    
+
     <title>Custom Emotes</title>
-    <link rel="icon" href="https://github.com/ION-Emotes/plugin/blob/main/loading.gif?raw=true" type="image/gif" >
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-
-        #emojiSearch {
-            padding: 10px;
-            margin-bottom: 20px;
-            width: calc(100% - 22px);
-            /* Adjusts for padding */
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        #emojis {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            padding: 5px;
-        }
-
-        #emojis div {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100px;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        #emojis img {
-            position: relative;
-            /* Needed for tooltip positioning */
-            width: 48px;
-            height: 48px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            /* Indicates that the item is interactive */
-        }
-
-        #emojis img::before {
-            content: attr(data-tooltip);
-            /* Use the data-tooltip attribute value */
-            position: absolute;
-            bottom: 100%;
-            /* Position above the image */
-            left: 50%;
-            /* Center below the image */
-            transform: translateX(-50%);
-            /* Center the tooltip */
-            background-color: #333;
-            /* Tooltip background color */
-            color: #fff;
-            /* Tooltip text color */
-            text-align: center;
-            border-radius: 4px;
-            padding: 5px;
-            font-size: 12px;
-            white-space: nowrap;
-            /* Prevents the tooltip from wrapping */
-            opacity: 0;
-            /* Start invisible */
-            visibility: hidden;
-            /* Hide tooltip by default */
-            transition: opacity 0.2s, visibility 0.2s;
-            /* Smooth transition for tooltip */
-            z-index: 1;
-            /* Ensure the tooltip is above other content */
-        }
-
-        #emojis img:hover::before {
-            opacity: 1;
-            /* Make the tooltip visible on hover */
-            visibility: visible;
-            /* Show tooltip */
-        }
-
-
-        #emojis p {
-            font-size: 12px;
-            color: #333;
-            text-align: center;
-            margin: 0;
-            word-wrap: break-word;
-            overflow: hidden;
-        }
-
-        .file-button {
-            margin: 5px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .file-button:hover {
-            background-color: #45a049;
-        }
-
-        .input-button-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            /* Creates space between the input and the button */
-        }
-
-        input[type="text"] {
-            flex-grow: 1;
-            padding: 10px;
-            border: 2px solid #007BFF;
-            /* Matching border color with the button */
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #007BFF;
-            /* A pleasant blue */
-            color: white;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            box-shadow: 0 4px #0056b3;
-            /* Darker shade of the button color for 3D effect */
-            transition: all 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-            /* A slightly darker shade for hover effect */
-            box-shadow: 0 2px #003d7a;
-            /* Adjust shadow for deeper 3D effect */
-            transform: translateY(-2px);
-            /* Slight move up */
-        }
-
-        button:active {
-            transform: translateY(1px);
-            /* Mimic button press */
-            box-shadow: 0 2px #003d7a;
-            /* Less shadow */
-        }
-    </style>
+    <link rel="icon" href="https://github.com/ION-Emotes/plugin/blob/main/loading.gif?raw=true" type="image/gif">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
 </head>
-
-<script>
-    const getCDNLink = (id, animated) => `https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "webp"}?size=48&quality=lossless`;
-    const clearInps = () => {
-        document.getElementById('emojis').style.marginBottom = "0px";
-        document.getElementById("emojis").innerHTML = "";
-        document.getElementById('emojiSearch').value = ''
-    }
-
-    const toggleLoad = () => {
-        const img = document.querySelector("#loadingif");
-
-        if (img) img.remove();
-        else document.getElementById("emojis").innerHTML = '<img id="loadingif" src="https://github.com/ION-Emotes/data/blob/main/loading.gif?raw=true" style="width: 300px; height: 300px;">';
-    }
-
-    async function displayEmojis(emojiKey) {
-        const res = await fetch(`https://raw.githubusercontent.com/ION-Emotes/data/main/data/${emojiKey}`);
-        const emotes = await res.json();
-
-        toggleLoad();
-
-        // Find the container in the document
-        const container = document.getElementById('emojis');
-
-        // Clear previous content
-        container.innerHTML = '';
-
-        // Iterate through each emoji in the data
-        Object.entries(emotes).forEach(([eName, emoji]) => {
-            // Create an img element for the emoji
-            const img = document.createElement('img');
-            // Construct the URL using the emoji id
-            img.src = getCDNLink(emoji.id, emoji.animated);
-            img.alt = eName;
-            img.style.width = '48px'; // Set the image size
-            img.style.height = '48px';
-            img.setAttribute('data-tooltip', emoji.oldName);
-
-            // Create a caption for the emoji name
-            const caption = document.createElement('p');
-            caption.textContent = emoji.oldName;
-
-            // Create a div to wrap the img and caption
-            const div = document.createElement('div');
-            div.appendChild(img);
-            div.appendChild(caption);
-
-            // Append the div to the container
-            container.appendChild(div);
-        });
-    }
-
-
-    function displayEmojisArr(emotes) {
-        // Find the container in the document
-        const container = document.getElementById('emojis');
-
-        // Clear previous content
-        container.innerHTML = '';
-
-        container.style.marginBottom = "0px";
-        if (!emotes.length) return container.innerHTML = "<h1>No Results Found!</h1>";
-
-        // Iterate through each emoji in the data
-        emotes.forEach(emoji => {
-            // Create an img element for the emoji
-            const img = document.createElement('img');
-            img.src = getCDNLink(emoji.id, emoji.animated);
-            img.alt = emoji.name;
-            img.style.width = '48px'; // Set the image size
-            img.style.height = '48px';
-            img.setAttribute('data-tooltip', emoji.oldName);
-            img.onclick = (e) => {
-                alert(`Original Name: ${emoji.oldName}\nLookup ID: ${emoji.name}`);
-            }
-
-            // Create a caption for the emoji name
-            const caption = document.createElement('p');
-            caption.textContent = emoji.name;
-
-            // Create a div to wrap the img and caption
-            const div = document.createElement('div');
-            div.appendChild(img);
-            div.appendChild(caption);
-
-            // Append the div to the container
-            container.appendChild(div);
-        });
-
-        container.style.marginBottom = "40px";
-    }
-
-
-    async function displayKeys() {
-        toggleLoad();
-
-        const el = document.getElementById("emojis");
-        const apiUrl = 'https://api.github.com/repos/ION-Emotes/data/contents/data';
-        try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            el.innerHTML = "";
-
-            const fileListElement = document.getElementById('fileList');
-
-            data.forEach(item => {
-                if (item.type === 'file') {
-                    const fileButton = document.createElement('button');
-                    fileButton.classList.add('file-button');
-                    fileButton.textContent = item.name.replace(".json", "");
-
-                    fileButton.addEventListener('click', function () {
-                        toggleLoad();
-                        displayEmojis(item.name);
-                    });
-                    fileListElement.appendChild(fileButton);
-                }
-            });
-        } catch (error) {
-            console.error('Error fetching directory contents:', error);
-        }
-    }
-
-    function inviteBot() {
-        if (["http://127.0.0.1:5500", "http://localhost:5500"].includes(window.location.origin)) {
-            window.location.href = "https://discord.com/oauth2/authorize?client_id=1224772542359933058&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5500%2Faddemote.html&scope=identify+bot&permissions=0";
-        }
-        else {
-            window.location.href = "https://discord.com/oauth2/authorize?client_id=1224772542359933058&response_type=code&redirect_uri=https%3A%2F%2Fstreamelements.ion606.com%2Faddemote.html&scope=identify+bot&permissions=0";
-        }
-    }
-
-    window.addEventListener("DOMContentLoaded", async () => {
-        toggleLoad();
-        displayKeys();
-
-        // Attach an event listener to the search input
-        let debounceTimer;
-
-        document.getElementById('emojiSearch').addEventListener('input', (e) => {
-            const el = document.getElementById("emojis");
-            
-            // Clear the existing timer on each input event
-            clearTimeout(debounceTimer);
-            const searchTerm = e.target.value.toLowerCase();
-            if (!searchTerm || !searchTerm[0]) return el.innerHTML = "";
-
-            el.innerHTML = '<img src="https://github.com/ION-Emotes/data/blob/main/loading.gif?raw=true" style="width: 300px; height: 300px;">';
-
-            // Set a new timer
-            debounceTimer = setTimeout(async () => {
-                const res = await fetch(`https://raw.githubusercontent.com/ION-Emotes/data/main/data/${searchTerm[0]}.json`);
-                const emotes = await res.json();
-
-                const filteredData = Object.keys(emotes).filter(key => key.includes(searchTerm.toLowerCase())).reduce((obj, key) => {
-                    const o2 = emotes[key];
-                    o2.name = key;
-                    obj.push(o2);
-                    return obj;
-                }, []);
-
-                displayEmojisArr(filteredData);
-            }, 1500);
-        });
-
-        const params = new URLSearchParams(window.location.search);
-        const query = params.get("query");
-        if (query) {
-            const inpEl = document.getElementById('emojiSearch');
-            inpEl.value = query;
-            inpEl.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    });
-</script>
 
 <body>
     <div style="text-align: center;">
@@ -357,7 +29,7 @@
     </div>
     <div id="emojis"></div>
     <div id="fileList"></div>
-    
+
     <div style="text-align: center; margin-top: 50px;">
         <h4>Click on an emoji to see it's lookup ID</h4>
         <button onclick="window.open('howto.html', '_blank')">help</button>
@@ -367,9 +39,34 @@
     <div style="text-align: center; margin-top: 50px;">
         <h2>What is this????</h2>
         <div>
-            This is a plugin that lets you add Discord emotes to your Streamelements overlay!<br>For example, 
-            when someone types <code>:pink_nodders:</code> in your chat, it'll show up as <img src="https://cdn.discordapp.com/emojis/937079880473014362.gif" style="width: 20px;">
+            This is a plugin that lets you add Discord emotes to your Streamelements overlay!<br>For example,
+            when someone types <code>:pink_nodders:</code> in your chat, it'll show up as <img
+                src="https://cdn.discordapp.com/emojis/937079880473014362.gif" style="width: 20px;">
             on your overlay!
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Modal Header</h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body-col" data-for="content">
+
+                </div>
+                
+                <div class="modal-body-col" data-for="img">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <h3>Modal Footer</h3>
+            </div>
         </div>
     </div>
 </body>

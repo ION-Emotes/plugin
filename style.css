@@ -1,0 +1,270 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+#emojiSearch {
+    padding: 10px;
+    margin-bottom: 20px;
+    width: calc(100% - 22px);
+    /* Adjusts for padding */
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#emojis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 5px;
+}
+
+#emojis div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#emojis img {
+    position: relative;
+    /* Needed for tooltip positioning */
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    /* Indicates that the item is interactive */
+}
+
+#emojis img::before {
+    content: attr(data-tooltip);
+    /* Use the data-tooltip attribute value */
+    position: absolute;
+    bottom: 100%;
+    /* Position above the image */
+    left: 50%;
+    /* Center below the image */
+    transform: translateX(-50%);
+    /* Center the tooltip */
+    background-color: #333;
+    /* Tooltip background color */
+    color: #fff;
+    /* Tooltip text color */
+    text-align: center;
+    border-radius: 4px;
+    padding: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    /* Prevents the tooltip from wrapping */
+    opacity: 0;
+    /* Start invisible */
+    visibility: hidden;
+    /* Hide tooltip by default */
+    transition: opacity 0.2s, visibility 0.2s;
+    /* Smooth transition for tooltip */
+    z-index: 1;
+    /* Ensure the tooltip is above other content */
+}
+
+#emojis img:hover::before {
+    opacity: 1;
+    /* Make the tooltip visible on hover */
+    visibility: visible;
+    /* Show tooltip */
+}
+
+
+#emojis p {
+    font-size: 12px;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
+.file-button {
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.file-button:hover {
+    background-color: #45a049;
+}
+
+.input-button-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Creates space between the input and the button */
+}
+
+input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 2px solid #007BFF;
+    /* Matching border color with the button */
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007BFF;
+    /* A pleasant blue */
+    color: white;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 4px #0056b3;
+    /* Darker shade of the button color for 3D effect */
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+    /* A slightly darker shade for hover effect */
+    box-shadow: 0 2px #003d7a;
+    /* Adjust shadow for deeper 3D effect */
+    transform: translateY(-2px);
+    /* Slight move up */
+}
+
+button:active {
+    transform: translateY(1px);
+    /* Mimic button press */
+    box-shadow: 0 2px #003d7a;
+    /* Less shadow */
+}
+
+/* The Modal (background) */
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    max-width: 750px;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0
+    }
+
+    to {
+        top: 0;
+        opacity: 1
+    }
+}
+
+@keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0
+    }
+
+    to {
+        top: 0;
+        opacity: 1
+    }
+}
+
+/* The Close Button */
+.close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
+.modal-body {
+    padding: 2px 16px;
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
+.modal-body-col {
+    background-size: contain;
+    background-repeat: no-repeat;
+    /* background-position: 50% 50%; */
+}
+
+@media only screen and (max-width: 600px) {
+    .modal-body {
+        display: block;
+    }
+
+    .modal-body-col[data-for="img"] {
+        width: 100px;
+        height: 100px;
+        background-size: cover;
+        background-position: center;
+    }
+}
