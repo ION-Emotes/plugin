@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Emote API</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const searchTerm = (new URLSearchParams(window.location.search)).get('query');
+                if (!searchTerm) {
+                    const apiUrl = 'https://api.github.com/repos/ION-Emotes/data/contents/data';
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+                    return document.body.innerText = JSON.stringify(data); //`<pre>${JSON.stringify(data)}</pre>`;
+                }
+
+                const res = await fetch(`https://raw.githubusercontent.com/ION-Emotes/data/main/data/${searchTerm[0]}.json`);
+                const emotes = await res.json();
+
+                const filteredData = Object.keys(emotes).filter(key => key.includes(searchTerm.trim().toLowerCase())).reduce((obj, key) => {
+                    const o2 = emotes[key];
+                    o2.name = key;
+                    obj.push(o2);
+                    return obj;
+                }, []);
+
+                document.body.innerText = JSON.stringify(filteredData);
+            }
+            catch (err) {
+                console.error(err);
+            }
+        })
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
