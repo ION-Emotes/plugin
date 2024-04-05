@@ -7,7 +7,7 @@ async function getCustomEmote(query) {
 
         if (!o) return null;
 
-        return `https://cdn.discordapp.com/emojis/${o[1].id}.${o[1].animated ? "gif" : "webp"}?size=48&quality=lossless`
+        return `https://cdn.discordapp.com/emojis/${o[1].id}.${o[1].animated ? "gif" : "webp"}`
     }
     catch (err) {
         console.error(err);

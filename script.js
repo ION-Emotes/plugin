@@ -1,4 +1,4 @@
-const getCDNLink = (id, animated) => `https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "webp"}?size=48&quality=lossless`;
+const getCDNLink = (id, animated) => `https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "webp"}`;
 const clearInps = () => {
     document.getElementById('emojis').style.marginBottom = "0px";
     document.getElementById("emojis").innerHTML = "";
