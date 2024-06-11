@@ -112,8 +112,9 @@ async function displayKeys() {
                 fileButton.textContent = item.name.replace(".json", "");
 
                 fileButton.addEventListener('click', function () {
-                    toggleLoad();
-                    displayEmojis(item.name);
+                    const input = document.querySelector('#emojiSearch');
+                    input.value = item.name.replace('.json', '');
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
                 });
                 fileListElement.appendChild(fileButton);
             }
